@@ -92,6 +92,10 @@ def ensure_clean_dir(path: Path) -> Path:
     return path
 
 
+def ensure_parent(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+
 def write_text(path: Path, content: str, *, executable: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding='utf-8', newline='\n')
@@ -167,6 +171,7 @@ def create_portable_bundle() -> Path:
 
 
 def zip_dir(src: Path, dst: Path) -> None:
+    ensure_parent(dst)
     with ZipFile(dst, 'w', compression=ZIP_DEFLATED, compresslevel=9) as zf:
         for path in sorted(src.rglob('*')):
             if path.is_dir():
@@ -175,6 +180,7 @@ def zip_dir(src: Path, dst: Path) -> None:
 
 
 def tar_gz_dir(src: Path, dst: Path) -> None:
+    ensure_parent(dst)
     with tarfile.open(dst, 'w:gz') as tf:
         tf.add(src, arcname=src.name, recursive=True)
 
@@ -213,9 +219,17 @@ def stage_linux_package_root() -> Path:
     write_text(stage / 'usr' / 'bin' / APP_ID, launcher, executable=True)
 
     desktop_src = ROOT / 'packaging' / 'linux' / 'chisp-flasher.desktop'
-    shutil.copy2(desktop_src, stage / 'usr' / 'share' / 'applications' / desktop_src.name)
-    shutil.copy2(ROOT / 'README.md', stage / 'usr' / 'share' / 'doc' / APP_ID / 'README.md')
-    shutil.copy2(ROOT / 'packaging' / 'linux' / '50-chisp-flasher.rules', stage / 'usr' / 'lib' / 'udev' / 'rules.d' / '50-chisp-flasher.rules')
+    desktop_dst = stage / 'usr' / 'share' / 'applications' / desktop_src.name
+    ensure_parent(desktop_dst)
+    shutil.copy2(desktop_src, desktop_dst)
+
+    readme_dst = stage / 'usr' / 'share' / 'doc' / APP_ID / 'README.md'
+    ensure_parent(readme_dst)
+    shutil.copy2(ROOT / 'README.md', readme_dst)
+
+    rules_dst = stage / 'usr' / 'lib' / 'udev' / 'rules.d' / '50-chisp-flasher.rules'
+    ensure_parent(rules_dst)
+    shutil.copy2(ROOT / 'packaging' / 'linux' / '50-chisp-flasher.rules', rules_dst)
 
     icon_dir = ROOT / 'packaging' / 'icons' / 'png'
     for size in [16, 24, 32, 48, 64, 128, 256, 512]:
@@ -223,7 +237,7 @@ def stage_linux_package_root() -> Path:
         if not src.exists():
             continue
         dst = stage / 'usr' / 'share' / 'icons' / 'hicolor' / f'{size}x{size}' / 'apps' / f'{APP_ID}.png'
-        dst.parent.mkdir(parents=True, exist_ok=True)
+        ensure_parent(dst)
         shutil.copy2(src, dst)
 
     return stage
@@ -281,6 +295,7 @@ def build_windows_installer() -> None:
         f'/DSourceDir={DIST_DIR / APP_NAME}',
         f'/DOutputDir={RELEASE_DIR}',
         f'/DOutputBaseFilename={output_name}',
+        f'/DSetupIconFile={ROOT / "packaging" / "icons" / "app.ico"}',
         str(ROOT / 'packaging' / 'windows' / 'chisp-flasher.iss'),
     ])
 

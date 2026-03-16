@@ -31,11 +31,15 @@ jobs:
           python-version: '3.13'
           cache: 'pip'
 
-      - name: Install Linux packaging tools
+      - name: Install Linux packaging tools and Qt runtime deps
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y rpm ruby ruby-dev build-essential fakeroot desktop-file-utils
+          sudo apt-get install -y \
+            rpm ruby ruby-dev build-essential fakeroot desktop-file-utils \
+            libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+            libxcb-render-util0 libxcb-shape0 libxcb-util1 libxcb-xkb1 \
+            libxkbcommon-x11-0 libtiff6
           sudo gem install --no-document fpm
 
       - name: Install Windows packaging tools

@@ -16,6 +16,9 @@
 #ifndef OutputBaseFilename
   #define OutputBaseFilename "chisp-flasher-setup"
 #endif
+#ifndef SetupIconFile
+  #error SetupIconFile not defined
+#endif
 
 [Setup]
 AppId={{A4E0A407-DB04-46E0-AC4B-4E0D930C52E4}
@@ -34,7 +37,7 @@ SolidCompression=yes
 WizardStyle=modern
 OutputDir={#OutputDir}
 OutputBaseFilename={#OutputBaseFilename}
-SetupIconFile=packaging\icons\app.ico
+SetupIconFile={#SetupIconFile}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
