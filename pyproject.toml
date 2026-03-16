@@ -1,0 +1,9 @@
+[project]
+name = "chisp-flasher"
+version = "1.0.0"
+description = "Cross-platform ISP flasher for WCH CH32, CH5x and CH6x families"
+requires-python = ">=3.11"
+dependencies = ["PySide6", "PyYAML", "pyserial", "pyusb", "pyelftools"]
+
+[project.scripts]
+chisp-flasher = "chisp_flasher.app.main:main"

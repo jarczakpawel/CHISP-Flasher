@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=CHISP Flasher
+Comment=ISP flasher for WCH CH32, CH5x and CH6x devices
+Exec=chisp-flasher
+Icon=chisp-flasher
+Terminal=false
+Categories=Development;Utility;
+StartupNotify=true
+StartupWMClass=chisp-flasher

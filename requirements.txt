@@ -1,0 +1,6 @@
+PySide6
+PyYAML
+pyserial
+pyusb
+
+pyelftools

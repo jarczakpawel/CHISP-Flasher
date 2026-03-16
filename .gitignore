@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+build/
+dist/
+_tmp_*.chisp
+_tmp_*.json
+tmp_*.chisp
+docs/

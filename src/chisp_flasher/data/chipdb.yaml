@@ -1,0 +1,3902 @@
+meta:
+  format: chisp-chipdb
+  version: 14
+  project_name: CHISP Flasher
+  scope:
+    families:
+    - CH32F
+    - CH32V
+    - CH32X
+    - CH32L
+    - CH54
+    - CH55
+    - CH56
+    - CH57
+    - CH58
+    - CH59
+    transports:
+    - serial
+    - usb
+  rules:
+    vendor_files_are_hints_not_truth: true
+    gui_is_data_driven: true
+    backend_owns_protocol: true
+backend_families:
+  ch32x103:
+    option_profile: x103
+    flash_defaults:
+      default_chunk_size: 56
+      default_initial_baud: 115200
+      default_fast_baud: 1000000
+      default_preserve_user_word: true
+    target_v1: true
+    vendor_mcu_types:
+    - 4
+    - 5
+    chips:
+    - CH32F103
+    - CH32V103
+    expected_device_types:
+      CH32F103:
+      - 20
+      CH32V103:
+      - 21
+    gui_profiles:
+      serial:
+      - x103_serial
+      usb:
+      - x103_usb
+    protocol_variants:
+    - uart_framed
+    - usb_native_plain
+    cross_check:
+      wchisp_device_types:
+        CH32F103: 20
+        CH32V103: 21
+      x103_gui_long_delay_maps_to_porctr: true
+    protocol_note: uart_framed path inferred from family-level support and shared
+      config layout
+  ch32v20x:
+    option_profile: fv20x
+    flash_defaults:
+      default_initial_baud: 115200
+      default_fast_baud: 1000000
+      CH32V203:
+        chunk_size: 56
+        sector_size: 1024
+        erase_sectors: 64
+        initial_baud: 115200
+        fast_baud: 1000000
+        verify_every: 1
+        verify_last: true
+        default_seed_len: 30
+        default_seed_random: false
+      CH32V208:
+        initial_baud: 115200
+        fast_baud: 1000000
+    target_v1: true
+    vendor_mcu_types:
+    - 9
+    chips:
+    - CH32V203
+    - CH32V208
+    expected_device_types:
+      CH32V203:
+      - 25
+      CH32V208:
+      - 25
+    working_backend_status:
+      CH32V203: implemented_from_bmcu_flasher_baseline
+      CH32V208: not_yet_verified
+    identify_request_defaults:
+      CH32V203:
+        observed_device_id: 49
+        observed_device_type: 25
+        banner: MCU ISP & WCH.CN
+    gui_profiles:
+      serial:
+      - v20x_serial_v203
+      - v20x_serial_v208
+      usb:
+      - v20x_usb
+    known_flows:
+      serial_ttl:
+        status: verified_from_capture
+        chip: CH32V203C8T6
+        sequence:
+        - A1
+        - A7
+        - A8_step1
+        - A7
+        - A2_reason_01
+        - A1
+        - A7
+        - A1
+        - A7
+        - A8_step2
+        - A7
+        - A3
+        - A4
+        - C5
+        - A5_many
+        - A5_flush
+        - A3
+        - A6_many
+        - A2_reason_00
+      usb_auto_di:
+        status: partly_decoded_from_capture
+        chip: CH32V203C8T6
+        sequence_shape:
+        - A1
+        - A7
+        - A8_step1
+        - A7
+        - A2_reason_01
+        - A1
+        - A7
+        - A1
+        - A7
+        - A8_step2
+        - A7
+        - A3
+        - A4
+        - C5
+        - A5_many
+        - A5_flush
+        - A3
+        - A6_many
+        - A2_reason_00
+    protocol_variants:
+    - uart_framed
+    - usb_native_plain
+    cross_check:
+      official_bootloader_interfaces:
+      - USART1
+      - USB
+      wchisp_device_type: 25
+  ch32v30x:
+    option_profile: fv30x
+    flash_defaults_serial_inferred:
+      default_chunk_size: 56
+      default_initial_baud: 115200
+      default_fast_baud: 1000000
+      default_preserve_user_word: true
+    target_v1: true
+    vendor_mcu_types:
+    - 7
+    chips:
+    - CH32V303
+    - CH32V305
+    - CH32V307
+    - CH32V317
+    expected_device_types:
+      CH32V303:
+      - 23
+      CH32V305:
+      - 23
+      CH32V307:
+      - 23
+      CH32V317:
+      - 38
+    gui_profiles:
+      serial:
+      - v30x_serial_split
+      - v30x_serial_compact
+      usb:
+      - v30x_usb
+    working_backend_status:
+      CH32V307: implemented_from_capture_not_hardware_verified
+    identify_request_defaults:
+      CH32V307:
+        observed_device_id_native_usb: 112
+        observed_device_type_native_usb: 23
+        banner: MCU ISP & WCH.CN
+    native_usb_defaults:
+      CH32V307:
+        plain_frame_protocol: true
+        chunk_size: 56
+        erase_sectors: 288
+        set_baud_observed: false
+        option_preamble_observed: false
+        program_full_blocks: 193
+        program_tail_len: 8
+        program_flush_addr: 10816
+        verify_full_blocks: 193
+        verify_tail_len: 8
+        verify_tail_addr: 10808
+        project_format_version_min: 3
+        common_selectors:
+        - 4348:55e0
+        - 1a86:55e0
+    known_flows:
+      native_usb_bootloader:
+        status: decoded_from_capture
+        chip: CH32V307VCT6
+        protocol_shape: plain_usb_frames_without_57ab_55aa
+        sequence:
+        - A1
+        - A7
+        - A8_single
+        - A7
+        - A3
+        - A4
+        - A5_many
+        - A5_flush
+        - A3
+        - A6_many
+        - A2_reason_00
+    protocol_variants:
+    - uart_framed
+    - usb_native_plain
+    cross_check:
+      official_bootloader_interfaces:
+      - USART1
+      - USB
+      wchisp_device_type: 23
+    protocol_note_serial: uart_framed serial path inferred; native USB path capture-driven
+      for V307
+  ch32x03x:
+    option_profile: x035
+    flash_defaults:
+      default_chunk_size: 56
+      default_initial_baud: 115200
+      default_fast_baud: 1000000
+    target_v1: true
+    vendor_mcu_types:
+    - 19
+    chips:
+    - CH32X033
+    - CH32X035
+    gui_profiles:
+      serial:
+      - x035_serial
+      usb:
+      - x035_usb
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    protocol_note: native USB path aligned to public x03x family reports and wchisp
+      variant tables; serial path enabled from public wchisp metadata plus independent
+      wch-web-isp implementation
+  ch32v00x:
+    flash_defaults:
+      default_chunk_size: 56
+      default_initial_baud: 115200
+      default_fast_baud: 1000000
+      default_preserve_user_word: true
+    target_v1: true
+    vendor_mcu_types:
+    - 17
+    chips:
+    - CH32V002
+    - CH32V003
+    - CH32V004
+    - CH32V005
+    - CH32V006
+    - CH32V007
+    - CH32M007
+    expected_device_types:
+      CH32V002:
+      - 33
+      CH32V003:
+      - 33
+      CH32V004:
+      - 33
+      CH32V005:
+      - 33
+      CH32V006:
+      - 33
+      CH32V007:
+      - 33
+      CH32M007:
+      - 33
+    gui_profiles:
+      serial:
+      - v00x_serial
+    protocol_variants:
+    - uart_framed
+    protocol_note: uart_framed serial path aligned to public CH32V00x bootloader support;
+      USB stays disabled because CH32V00x has no USB ISP interface
+  ch32l103:
+    flash_defaults:
+      default_chunk_size: 56
+      default_initial_baud: 115200
+      default_fast_baud: 1000000
+      default_preserve_user_word: true
+    target_v1: true
+    vendor_mcu_types:
+    - 21
+    chips:
+    - CH32L103
+    expected_device_types:
+      CH32L103:
+      - 37
+    gui_profiles:
+      serial:
+      - l103_serial
+      usb:
+      - l103_usb
+    protocol_variants:
+    - uart_framed
+    - usb_native_plain
+    protocol_note: uart_framed/native-usb path aligned to public CH32L103 support
+      in wchisp and wch-web-isp; config write stays disabled until option profile
+      is confirmed
+  ch32f20x:
+    option_profile: fv20x_or_compact
+    flash_defaults:
+      default_chunk_size: 56
+      default_initial_baud: 115200
+      default_fast_baud: 1000000
+      default_preserve_user_word: true
+    target_v1: true
+    vendor_mcu_types:
+    - 8
+    chips:
+    - CH32F203
+    - CH32F205
+    - CH32F207
+    - CH32F208
+    expected_device_types:
+      CH32F203:
+      - 24
+      - 32
+      CH32F205:
+      - 24
+      CH32F207:
+      - 24
+      CH32F208:
+      - 24
+    gui_profiles:
+      serial:
+      - f20x_serial_split
+      - f20x_serial_compact
+      usb:
+      - f20x_usb
+    protocol_variants:
+    - uart_framed
+    - usb_native_plain
+    protocol_note: uart_framed/native-usb path aligned to shared FV20x/V20x/V30x ISP
+      engine; CH32F203 must stay split by device_type 0x18 vs 0x20
+  wch_legacy_usb:
+    flash_defaults:
+      default_chunk_size: 56
+      alignment_bytes: 8
+    target_v1: true
+    chips:
+    - CH540
+    - CH541
+    - CH542
+    - CH543
+    - CH544
+    - CH545
+    - CH553
+    - CH555
+    - CH556
+    - CH557
+    - CH563
+    - CH565
+    - CH566
+    - CH567
+    - CH568
+    - CH569
+    - CH570
+    - CH572
+    - CH581
+    - CH583
+    - CH584
+    - CH585
+    gui_profiles:
+      usb:
+      - wch_legacy_usb
+    protocol_variants:
+    - usb_native_plain
+    protocol_note: native USB ISP path aligned to public CH57x/CH58x/CH59x tools and
+      protocol captures
+  wch_legacy_uart:
+    flash_defaults:
+      default_chunk_size: 56
+      alignment_bytes: 8
+      default_initial_baud: 115200
+      default_fast_baud: 115200
+    target_v1: true
+    chips:
+    - CH546
+    - CH547
+    - CH548
+    - CH549
+    - CH551
+    - CH552
+    - CH554
+    - CH558
+    - CH559
+    - CH571
+    - CH573
+    - CH577
+    - CH578
+    - CH579
+    - CH582
+    - CH591
+    - CH592
+    gui_profiles:
+      serial:
+      - wch_legacy_serial
+      usb:
+      - wch_legacy_usb
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    protocol_note: legacy UART uses native/plain legacy ISP payloads wrapped in 57ab/55aa
+      serial framing; native USB stays aligned to the shared legacy USB path
+transport_matrix:
+  CH32V203:
+    serial_manual:
+      backend_family: ch32v20x
+      protocol: uart_framed
+      reference_flow: bmcu_flasher_ttl
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32v20x
+      protocol: uart_framed
+      reference_flow: bmcu_flasher_usb_uart_autodi
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32v20x
+      protocol: usb_native_plain
+      alignment_reference: ch32v307_native_usb
+  CH32V208:
+    serial_manual:
+      backend_family: ch32v20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32v20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32v20x
+      protocol: usb_native_plain
+      alignment_reference: ch32v307_native_usb
+  CH32V303:
+    serial_manual:
+      backend_family: ch32v30x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32v30x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32v30x
+      protocol: usb_native_plain
+      alignment_reference: CH32V307_capture
+  CH32V305:
+    serial_manual:
+      backend_family: ch32v30x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32v30x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32v30x
+      protocol: usb_native_plain
+      alignment_reference: CH32V307_capture
+  CH32V307:
+    serial_manual:
+      backend_family: ch32v30x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32v30x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32v30x
+      protocol: usb_native_plain
+      reference_flow: capture_verified_on_real_board
+  CH32V317:
+    serial_manual:
+      backend_family: ch32v30x
+      protocol: uart_framed
+      inferred_from: CH32V30x_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32v30x
+      protocol: uart_framed
+      inferred_from: CH32V30x_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32v30x
+      protocol: usb_native_plain
+      alignment_reference: CH32V30x_family_usb
+  CH32F103:
+    serial_manual:
+      backend_family: ch32x103
+      protocol: uart_framed
+      inferred_from: family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32x103
+      protocol: uart_framed
+      inferred_from: family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32x103
+      protocol: usb_native_plain
+      alignment_reference: x103_family_usb
+  CH32V103:
+    serial_manual:
+      backend_family: ch32x103
+      protocol: uart_framed
+      inferred_from: family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32x103
+      protocol: uart_framed
+      inferred_from: family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32x103
+      protocol: usb_native_plain
+      alignment_reference: x103_family_usb
+  CH32F203:
+    serial_manual:
+      backend_family: ch32f20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32f20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32f20x
+      protocol: usb_native_plain
+      alignment_reference: v2v3_usb_family
+  CH32F205:
+    serial_manual:
+      backend_family: ch32f20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32f20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32f20x
+      protocol: usb_native_plain
+      alignment_reference: v2v3_usb_family
+  CH32F207:
+    serial_manual:
+      backend_family: ch32f20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32f20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32f20x
+      protocol: usb_native_plain
+      alignment_reference: v2v3_usb_family
+  CH32F208:
+    serial_manual:
+      backend_family: ch32f20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32f20x
+      protocol: uart_framed
+      inferred_from: CH32V203_family_match
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32f20x
+      protocol: usb_native_plain
+      alignment_reference: v2v3_usb_family
+  CH32V002:
+    serial_manual:
+      backend_family: ch32v00x
+      protocol: uart_framed
+      inferred_from: CH32V00x_public_bootloader_support
+      initial_baud: 115200
+      fast_baud: 1000000
+  CH32V003:
+    serial_manual:
+      backend_family: ch32v00x
+      protocol: uart_framed
+      reference_flow: publicly_tested_uart_bootloader
+      initial_baud: 115200
+      fast_baud: 1000000
+  CH32V004:
+    serial_manual:
+      backend_family: ch32v00x
+      protocol: uart_framed
+      inferred_from: CH32V00x_public_bootloader_support
+      initial_baud: 115200
+      fast_baud: 1000000
+  CH32V005:
+    serial_manual:
+      backend_family: ch32v00x
+      protocol: uart_framed
+      inferred_from: CH32V00x_public_bootloader_support
+      initial_baud: 115200
+      fast_baud: 1000000
+  CH32V006:
+    serial_manual:
+      backend_family: ch32v00x
+      protocol: uart_framed
+      inferred_from: CH32V00x_public_bootloader_support
+      initial_baud: 115200
+      fast_baud: 1000000
+  CH32V007:
+    serial_manual:
+      backend_family: ch32v00x
+      protocol: uart_framed
+      inferred_from: CH32V00x_public_bootloader_support
+      initial_baud: 115200
+      fast_baud: 1000000
+  CH32M007:
+    serial_manual:
+      backend_family: ch32v00x
+      protocol: uart_framed
+      inferred_from: CH32V00x_public_bootloader_support
+      initial_baud: 115200
+      fast_baud: 1000000
+  CH32L103:
+    serial_manual:
+      backend_family: ch32l103
+      protocol: uart_framed
+      inferred_from: wch-web-isp_and_wchisp
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32l103
+      protocol: uart_framed
+      inferred_from: wch-web-isp_and_wchisp
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32l103
+      protocol: usb_native_plain
+      alignment_reference: wchisp_family_support
+  CH32X033:
+    serial_manual:
+      backend_family: ch32x03x
+      protocol: uart_framed
+      inferred_from: wchisp_and_wch-web-isp
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32x03x
+      protocol: uart_framed
+      inferred_from: wchisp_and_wch-web-isp
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32x03x
+      protocol: usb_native_plain
+      alignment_reference: x03x_family_usb
+  CH32X035:
+    serial_manual:
+      backend_family: ch32x03x
+      protocol: uart_framed
+      inferred_from: wchisp_and_wch-web-isp
+      initial_baud: 115200
+      fast_baud: 1000000
+    serial_auto_di:
+      backend_family: ch32x03x
+      protocol: uart_framed
+      inferred_from: wchisp_and_wch-web-isp
+      initial_baud: 115200
+      fast_baud: 1000000
+    native_usb:
+      backend_family: ch32x03x
+      protocol: usb_native_plain
+      alignment_reference: x03x_family_usb
+  CH540:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH541:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH542:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH543:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH544:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH545:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH546:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH547:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH548:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH549:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH551:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH552:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH553:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH554:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH555:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH556:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH557:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH558:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH559:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH563:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: ch56x_family_usb
+  CH565:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: ch56x_family_usb
+  CH566:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: ch56x_family_usb
+  CH567:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: ch56x_family_usb
+  CH568:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: ch56x_family_usb
+  CH569:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: ch56x_family_usb
+  CH571:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH573:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH579:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH581:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH582:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH583:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH584:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH585:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH591:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH592:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH570:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH572:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+  CH577:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH578:
+    native_usb:
+      backend_family: wch_legacy_usb
+      protocol: usb_native_plain
+      alignment_reference: wch_legacy_usb_family
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH570D:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH570Q:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH570E:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+    native_usb: null
+  CH571F:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH571R:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH571K:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+    native_usb: null
+  CH572D:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH572Q:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH591F:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH591R:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH591D:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH592X:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH592F:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH592A:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH592D:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH584M:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH585M:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH584F:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH585F:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH585C:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH585D:
+    serial_manual:
+      backend_family: wch_legacy_uart
+      protocol: legacy_uart_native_wrapped
+      reference_flow: wch_legacy_uart_manual_phase1
+      initial_baud: 115200
+      fast_baud: 115200
+  CH578F:
+    native_usb: null
+chips:
+  CH32F103:
+    vendor_mcu_type: 4
+    vendor_chipid: 50
+    gui_profile_serial: x103_serial
+    gui_profile_usb: x103_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 51
+    identify_request_device_type_default: 20
+    confidence: inferred_from_wchisp_and_family_layout
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x32'
+      - '0x33'
+      wchisp_device_type: 20
+      wchisp_identify_pairs:
+      - chip_id: '0x33'
+        device_type: '0x14'
+      - chip_id: '0x32'
+        device_type: '0x14'
+      - chip_id: '0x3f'
+        device_type: '0x14'
+      source_note: wchisp main lists 0x32 for x6 while older wch-isp lists 0x3f; backend
+        accepts both
+    identify_request_pairs_default:
+    - chip_id: '0x33'
+      device_type: '0x14'
+    - chip_id: '0x32'
+      device_type: '0x14'
+    - chip_id: '0x3f'
+      device_type: '0x14'
+    backend_family: ch32x103
+    vendor_max_flash_size_hint: 65536
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 64
+  CH32F203:
+    vendor_mcu_type: 8
+    vendor_chipid: 48
+    gui_profile_serial: f20x_serial_split
+    gui_profile_usb: f20x_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default:
+    - 48
+    - 49
+    - 50
+    - 51
+    identify_request_device_type_default:
+    - 24
+    - 32
+    confidence: inferred_from_wchisp_and_reference_manual
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x30'
+      - '0x31'
+      - '0x32'
+      - '0x33'
+      wchisp_device_type: 24
+      wchisp_identify_pairs:
+      - chip_id: '0x30'
+        device_type: '0x18'
+      - chip_id: '0x31'
+        device_type: '0x18'
+      - chip_id: '0x33'
+        device_type: '0x18'
+      - chip_id: '0x30'
+        device_type: '0x20'
+      - chip_id: '0x31'
+        device_type: '0x20'
+      - chip_id: '0x32'
+        device_type: '0x20'
+      - chip_id: '0x33'
+        device_type: '0x20'
+      official_debug_download: WCH-Link SWD/JTAG support confirmed
+      wch_link_ram_for_algorithm: '0x2800'
+      isp_transport_confidence_note: usb+serial isp remains inferred from public WCHISP-style
+        evidence and chip-id maps; official WCH docs in current source set are much
+        clearer for WCH-Link/SWD than for F20x USB/UART ISP
+      product_family_note: general-purpose Cortex-M3, 144MHz
+      runtime_source_tier: swd_vendor_strong_isp_public_impl
+    backend_family: ch32f20x
+    vendor_max_flash_size_hint: 262144
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 256
+  CH32F205:
+    vendor_mcu_type: 8
+    vendor_chipid: 80
+    gui_profile_serial: f20x_serial_compact
+    gui_profile_usb: f20x_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 80
+    identify_request_device_type_default: 24
+    confidence: inferred_from_wchisp_and_reference_manual
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x50'
+      wchisp_device_type: 24
+      official_debug_download: WCH-Link SWD/JTAG support confirmed
+      wch_link_ram_for_algorithm: '0x2800'
+      isp_transport_confidence_note: usb+serial isp remains inferred from public WCHISP-style
+        evidence and chip-id maps; official WCH docs in current source set are much
+        clearer for WCH-Link/SWD than for F20x USB/UART ISP
+      product_family_note: interconnect Cortex-M3 family entry paired with CH32F207
+      runtime_source_tier: swd_vendor_strong_isp_public_impl
+    backend_family: ch32f20x
+    vendor_max_flash_size_hint: 131072
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 128
+  CH32F207:
+    vendor_mcu_type: 8
+    vendor_chipid: 112
+    gui_profile_serial: f20x_serial_split
+    gui_profile_usb: f20x_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 112
+    identify_request_device_type_default: 24
+    confidence: inferred_from_wchisp_and_reference_manual
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x70'
+      wchisp_device_type: 24
+      official_debug_download: WCH-Link SWD/JTAG support confirmed
+      wch_link_ram_for_algorithm: '0x2800'
+      isp_transport_confidence_note: usb+serial isp remains inferred from public WCHISP-style
+        evidence and chip-id maps; official WCH docs in current source set are much
+        clearer for WCH-Link/SWD than for F20x USB/UART ISP
+      product_family_note: interconnect Cortex-M3 family with Ethernet/CAN/USB positioning
+        on official product page
+      runtime_source_tier: swd_vendor_strong_isp_public_impl
+    backend_family: ch32f20x
+    vendor_max_flash_size_hint: 262144
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 256
+  CH32F208:
+    vendor_mcu_type: 8
+    vendor_chipid: 128
+    gui_profile_serial: f20x_serial_compact
+    gui_profile_usb: f20x_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 128
+    identify_request_device_type_default: 24
+    confidence: inferred_from_wchisp_and_reference_manual
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x80'
+      - '0x81'
+      wchisp_device_type: 24
+      official_debug_download: WCH-Link SWD/JTAG support confirmed
+      wch_link_ram_for_algorithm: '0x2800'
+      isp_transport_confidence_note: usb+serial isp remains inferred from public WCHISP-style
+        evidence and chip-id maps; official WCH docs in current source set are much
+        clearer for WCH-Link/SWD than for F20x USB/UART ISP
+      product_family_note: wireless Cortex-M3 family with BLE and USB/Ethernet positioning
+        on official product page
+      runtime_source_tier: swd_vendor_strong_isp_public_impl
+    backend_family: ch32f20x
+    vendor_max_flash_size_hint: 131072
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 128
+  CH32V002:
+    vendor_mcu_type: 17
+    vendor_chipid: 32
+    gui_profile_serial: v00x_serial
+    identify_request_device_id_default: 32
+    identify_request_device_type_default: 33
+    identify_request_pairs_default:
+    - chip_id: '0x20'
+      device_type: '0x21'
+    - chip_id: '0x21'
+      device_type: '0x21'
+    - chip_id: '0x22'
+      device_type: '0x21'
+    - chip_id: '0x23'
+      device_type: '0x21'
+    - chip_id: '0x24'
+      device_type: '0x21'
+    confidence: serial_only_family_supported_publicly_in_wchisp
+    transport_support:
+    - serial
+    public_cross_check:
+      wchisp_device_type: 33
+      wchisp_chip_ids:
+      - '0x20'
+      - '0x21'
+      - '0x22'
+      - '0x23'
+      - '0x24'
+    backend_family: ch32v00x
+    vendor_max_flash_size_hint: 16384
+    protocol_variants:
+    - uart_framed
+    erase_sectors_default: 16
+  CH32V003:
+    vendor_mcu_type: 17
+    vendor_chipid: 48
+    gui_profile_serial: v00x_serial
+    identify_request_device_id_default: 48
+    identify_request_device_type_default: 33
+    identify_request_pairs_default:
+    - chip_id: '0x30'
+      device_type: '0x21'
+    - chip_id: '0x31'
+      device_type: '0x21'
+    - chip_id: '0x32'
+      device_type: '0x21'
+    - chip_id: '0x33'
+      device_type: '0x21'
+    confidence: serial_only_family_publicly_supported_and_ch32v003_publicly_tested
+    transport_support:
+    - serial
+    public_cross_check:
+      wchisp_device_type: 33
+      wchisp_chip_ids:
+      - '0x30'
+      - '0x31'
+      - '0x32'
+      - '0x33'
+      wch_web_isp_supported: true
+      serial_only_bootloader: true
+      bootloader_entry_requires_software_reset_flag: true
+      external_boot_pin: false
+    backend_family: ch32v00x
+    vendor_max_flash_size_hint: 16384
+    protocol_variants:
+    - uart_framed
+    erase_sectors_default: 16
+  CH32V004:
+    vendor_mcu_type: 17
+    vendor_chipid: 64
+    gui_profile_serial: v00x_serial
+    identify_request_device_id_default: 64
+    identify_request_device_type_default: 33
+    identify_request_pairs_default:
+    - chip_id: '0x40'
+      device_type: '0x21'
+    - chip_id: '0x41'
+      device_type: '0x21'
+    confidence: serial_only_family_supported_publicly_in_wchisp
+    transport_support:
+    - serial
+    public_cross_check:
+      wchisp_device_type: 33
+      wchisp_chip_ids:
+      - '0x40'
+      - '0x41'
+    backend_family: ch32v00x
+    vendor_max_flash_size_hint: 32768
+    protocol_variants:
+    - uart_framed
+    erase_sectors_default: 32
+  CH32V005:
+    vendor_mcu_type: 17
+    vendor_chipid: 80
+    gui_profile_serial: v00x_serial
+    identify_request_device_id_default: 80
+    identify_request_device_type_default: 33
+    identify_request_pairs_default:
+    - chip_id: '0x50'
+      device_type: '0x21'
+    - chip_id: '0x51'
+      device_type: '0x21'
+    - chip_id: '0x52'
+      device_type: '0x21'
+    - chip_id: '0x53'
+      device_type: '0x21'
+    confidence: serial_only_family_supported_publicly_in_wchisp
+    transport_support:
+    - serial
+    public_cross_check:
+      wchisp_device_type: 33
+      wchisp_chip_ids:
+      - '0x50'
+      - '0x51'
+      - '0x52'
+      - '0x53'
+    backend_family: ch32v00x
+    vendor_max_flash_size_hint: 32768
+    protocol_variants:
+    - uart_framed
+    erase_sectors_default: 32
+  CH32V006:
+    vendor_mcu_type: 17
+    vendor_chipid: 96
+    gui_profile_serial: v00x_serial
+    identify_request_device_id_default: 96
+    identify_request_device_type_default: 33
+    identify_request_pairs_default:
+    - chip_id: '0x60'
+      device_type: '0x21'
+    - chip_id: '0x61'
+      device_type: '0x21'
+    - chip_id: '0x62'
+      device_type: '0x21'
+    - chip_id: '0x63'
+      device_type: '0x21'
+    confidence: serial_only_family_supported_publicly_in_wchisp
+    transport_support:
+    - serial
+    public_cross_check:
+      wchisp_device_type: 33
+      wchisp_chip_ids:
+      - '0x60'
+      - '0x61'
+      - '0x62'
+      - '0x63'
+    backend_family: ch32v00x
+    vendor_max_flash_size_hint: 63488
+    protocol_variants:
+    - uart_framed
+    erase_sectors_default: 62
+  CH32V007:
+    vendor_mcu_type: 17
+    vendor_chipid: 113
+    gui_profile_serial: v00x_serial
+    identify_request_device_id_default: 113
+    identify_request_device_type_default: 33
+    identify_request_pairs_default:
+    - chip_id: '0x71'
+      device_type: '0x21'
+    - chip_id: '0x72'
+      device_type: '0x21'
+    confidence: serial_only_family_supported_publicly_in_wchisp
+    transport_support:
+    - serial
+    public_cross_check:
+      wchisp_device_type: 33
+      wchisp_chip_ids:
+      - '0x71'
+      - '0x72'
+    backend_family: ch32v00x
+    vendor_max_flash_size_hint: 63488
+    protocol_variants:
+    - uart_framed
+    erase_sectors_default: 62
+  CH32M007:
+    vendor_mcu_type: 17
+    vendor_chipid: 112
+    gui_profile_serial: v00x_serial
+    identify_request_device_id_default: 112
+    identify_request_device_type_default: 33
+    identify_request_pairs_default:
+    - chip_id: '0x70'
+      device_type: '0x21'
+    confidence: serial_only_family_supported_publicly_in_wchisp
+    transport_support:
+    - serial
+    public_cross_check:
+      wchisp_device_type: 33
+      wchisp_chip_ids:
+      - '0x70'
+    backend_family: ch32v00x
+    vendor_max_flash_size_hint: 63488
+    protocol_variants:
+    - uart_framed
+    erase_sectors_default: 62
+  CH32L103:
+    vendor_mcu_type: 21
+    vendor_chipid: 49
+    gui_profile_serial: l103_serial
+    gui_profile_usb: l103_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 49
+    identify_request_device_type_default: 37
+    identify_request_pairs_default:
+    - chip_id: '0x30'
+      device_type: '0x25'
+    - chip_id: '0x31'
+      device_type: '0x25'
+    - chip_id: '0x32'
+      device_type: '0x25'
+    - chip_id: '0x37'
+      device_type: '0x25'
+    - chip_id: '0x3a'
+      device_type: '0x25'
+    - chip_id: '0x3b'
+      device_type: '0x25'
+    - chip_id: '0x3d'
+      device_type: '0x25'
+    confidence: family_supported_by_public_serial_and_usb_tools_but_not_hardware_verified_here
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x30'
+      - '0x31'
+      - '0x32'
+      - '0x37'
+      - '0x3a'
+      - '0x3b'
+      - '0x3d'
+      wchisp_device_type: 37
+      wch_web_isp_supported: true
+      wch_linke_supported: true
+      serial_public_tool_support: true
+      runtime_source_tier: usb_vendor_present_isp_public_impl
+    backend_family: ch32l103
+    vendor_max_flash_size_hint: 65536
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 64
+  CH32V103:
+    vendor_mcu_type: 5
+    vendor_chipid: 50
+    gui_profile_serial: x103_serial
+    gui_profile_usb: x103_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 51
+    identify_request_device_type_default: 21
+    confidence: inferred_from_wchisp_and_family_layout
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x32'
+      - '0x33'
+      wchisp_device_type: 21
+      wchisp_identify_pairs:
+      - chip_id: '0x33'
+        device_type: '0x15'
+      - chip_id: '0x32'
+        device_type: '0x15'
+      - chip_id: '0x3f'
+        device_type: '0x15'
+      source_note: wchisp main lists 0x32 for x6 while older wch-isp lists 0x3f; backend
+        accepts both
+      wch_web_isp_supported: true
+    identify_request_pairs_default:
+    - chip_id: '0x33'
+      device_type: '0x15'
+    - chip_id: '0x32'
+      device_type: '0x15'
+    - chip_id: '0x3f'
+      device_type: '0x15'
+    backend_family: ch32x103
+    vendor_max_flash_size_hint: 65536
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 64
+  CH32V203:
+    vendor_mcu_type: 9
+    vendor_chipid: 52
+    identify_request_device_id_observed: 49
+    identify_request_device_type_observed: 25
+    gui_profile_serial: v20x_serial_v203
+    gui_profile_usb: v20x_usb
+    public_cross_check:
+      wchisp_variant_chip_id: 49
+      wchisp_chip_ids:
+      - '0x30'
+      - '0x31'
+      - '0x32'
+      - '0x33'
+      - '0x34'
+      - '0x35'
+      - '0x36'
+      - '0x37'
+      - '0x39'
+      - '0x3b'
+      wchisp_device_type: 25
+      official_family_bootloader_ifaces:
+      - USART1
+      - USB
+      wchisp_tested_on: true
+      wch_web_isp_supported: true
+      wch_linke_supported: true
+      official_eval_wchisptool_download: true
+      official_eval_usb_pins:
+      - PA11_PA12
+      - PB6_PB7
+      official_eval_serial_uart: PA9_PA10
+      official_eval_boot_mode: BOOT0_VCC_BOOT1_GND
+      official_eval_source_strength: vendor_eval_manual
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    confidence: verified_from_bmcu_flasher_and_capture
+    transport_support:
+    - serial
+    - usb
+    backend_family: ch32v20x
+    vendor_max_flash_size_hint: 131072
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 64
+  CH32V208:
+    vendor_mcu_type: 9
+    vendor_chipid: 128
+    gui_profile_serial: v20x_serial_v208
+    gui_profile_usb: v20x_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 128
+    identify_request_device_type_default: 25
+    confidence: conservative_from_wchisp_plus_family_datasheet
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x80'
+      - '0x81'
+      - '0x82'
+      - '0x83'
+      wchisp_device_type: 25
+      wlink_available_flash: 480K
+      wch_web_isp_supported: true
+      wch_linke_supported: true
+      official_eval_wchisptool_download: true
+      official_eval_usb_pins:
+      - PA11_PA12
+      - PB6_PB7
+      official_eval_serial_uart: PA9_PA10
+      official_eval_boot_mode: BOOT0_VCC_BOOT1_GND
+      official_eval_source_strength: vendor_eval_manual
+    backend_family: ch32v20x
+    vendor_max_flash_size_hint: 131072
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 128
+  CH32V303:
+    vendor_mcu_type: 7
+    vendor_chipid: 48
+    gui_profile_serial: v30x_serial_split
+    gui_profile_usb: v30x_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 48
+    identify_request_device_type_default: 23
+    confidence: native_usb_inferred_from_family_plus_serial_inferred
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x30'
+      - '0x31'
+      - '0x32'
+      - '0x33'
+      wchisp_device_type: 23
+      wch_web_isp_supported: true
+      wch_linke_supported: true
+    backend_family: ch32v30x
+    vendor_max_flash_size_hint: 262144
+    protocol_variants:
+    - uart_framed
+    - usb_native_plain
+    erase_sectors_default: 256
+  CH32V305:
+    vendor_mcu_type: 7
+    vendor_chipid: 80
+    gui_profile_serial: v30x_serial_compact
+    gui_profile_usb: v30x_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 80
+    identify_request_device_type_default: 23
+    confidence: native_usb_inferred_from_family_plus_serial_inferred
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_ids:
+      - '0x50'
+      wchisp_device_type: 23
+      wch_web_isp_supported: true
+      wch_linke_supported: true
+    backend_family: ch32v30x
+    vendor_max_flash_size_hint: 131072
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 128
+  CH32V307:
+    vendor_mcu_type: 7
+    vendor_chipid: 112
+    identify_request_device_id_observed_native_usb: 112
+    identify_request_device_type_observed_native_usb: 23
+    gui_profile_serial: v30x_serial_split
+    gui_profile_usb: v30x_usb
+    public_cross_check:
+      wchisp_variant_chip_id: 112
+      wchisp_chip_ids:
+      - '0x70'
+      - '0x71'
+      - '0x73'
+      wchisp_device_type: 23
+      official_family_bootloader_ifaces:
+      - USART1
+      - USB
+      wch_web_isp_supported: true
+      wch_linke_supported: true
+      wchisp_tested_on: true
+      official_eval_wchisptool_download: true
+      official_eval_usb_pins:
+      - PA11_PA12
+      - PB6_PB7
+      official_eval_serial_uart: PA9_PA10
+      official_eval_boot_mode: BOOT0_VCC_BOOT1_GND
+      official_eval_source_strength: vendor_eval_manual
+    native_usb:
+      status: verified_from_real_reference_flow
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 112
+    identify_request_device_type_default: 23
+    confidence: native_usb_reference_verified_and_serial_inferred
+    transport_support:
+    - serial
+    - usb
+    backend_family: ch32v30x
+    vendor_max_flash_size_hint: 262144
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 256
+  CH32V317:
+    vendor_mcu_type: 22
+    vendor_chipid: 112
+    gui_profile_serial: v30x_serial_split
+    gui_profile_usb: v30x_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 112
+    identify_request_device_type_default: 38
+    identify_request_pairs_default:
+    - chip_id: '0x70'
+      device_type: '0x26'
+    - chip_id: '0x73'
+      device_type: '0x26'
+    confidence: public_wchisp_family_support_and_recent_device_addition
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_device_type: 38
+      wchisp_chip_ids:
+      - '0x70'
+      - '0x73'
+    backend_family: ch32v30x
+    vendor_max_flash_size_hint: 262144
+    protocol_variants:
+    - uart_framed
+    - usb_native_plain
+    erase_sectors_default: 256
+  CH32X033:
+    vendor_mcu_type: 19
+    vendor_chipid: 90
+    gui_profile_serial: x035_serial
+    gui_profile_usb: x035_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 90
+    identify_request_device_type_default: 35
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      rvprog_chip_id: '0x035a'
+      shared_datasheet_with: CH32X035
+      chprog_usb_bootloader_usage: true
+      wchisp_variant_chip_id: 90
+      wchisp_device_type: 35
+      wch_web_isp_supported: true
+      wchisp_identify_pairs:
+      - chip_id: '0x5a'
+        device_type: '0x23'
+      wch_linke_supported: false
+      family_shared_with: CH32X035
+      usb_bootloader_family_plausible: true
+      runtime_source_tier: family_vendor_present_exact_bootloader_public_thin
+    backend_family: ch32x03x
+    vendor_max_flash_size_hint: 63488
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 64
+  CH32X035:
+    vendor_mcu_type: 19
+    vendor_chipid: 86
+    gui_profile_serial: x035_serial
+    gui_profile_usb: x035_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 86
+    identify_request_device_type_default: 35
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_variant_chip_id: 86
+      wchisp_chip_ids:
+      - '0x50'
+      - '0x51'
+      - '0x56'
+      - '0x57'
+      - '0x5b'
+      - '0x5e'
+      wchisp_device_type: 35
+      wch_web_isp_supported: true
+      wchisp_identify_pairs:
+      - chip_id: '0x50'
+        device_type: '0x23'
+      - chip_id: '0x51'
+        device_type: '0x23'
+      - chip_id: '0x56'
+        device_type: '0x23'
+      - chip_id: '0x57'
+        device_type: '0x23'
+      - chip_id: '0x5b'
+        device_type: '0x23'
+      - chip_id: '0x5e'
+        device_type: '0x23'
+      isp55e0_tested_usb: true
+      wchisp_tested_on: true
+      wch_linke_supported: true
+      usb_bootloader_public_issue_confirmed: true
+      known_usb_bootloader_vids:
+      - 4348:55e0
+      - 1a86:55e0
+      runtime_source_tier: usb_vendor_present_bootloader_public_strong
+    backend_family: ch32x03x
+    vendor_max_flash_size_hint: 63488
+    protocol_variants:
+    - usb_native_plain
+    - uart_framed
+    erase_sectors_default: 64
+  CH540:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 64
+    identify_request_device_type_default: 18
+    transport_support:
+    - usb
+    public_cross_check:
+      ch543_family_manual_chip_id_register_hex: '0x40'
+      ch543_family_datasheet_app_flash_hint: 10240
+      wchisptool_cmd_family_support: CH54x
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 10240
+    protocol_variants:
+    - usb_native_plain
+  CH541:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 65
+    identify_request_device_type_default: 18
+    transport_support:
+    - usb
+    public_cross_check:
+      ch543_family_manual_chip_id_register_hex: '0x41'
+      wch_2024q1_product_guide_code_flash_hint: 14336
+      wchisptool_cmd_family_support: CH54x
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 14336
+    protocol_variants:
+    - usb_native_plain
+  CH542:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 66
+    identify_request_device_type_default: 18
+    transport_support:
+    - usb
+    public_cross_check:
+      ch543_family_manual_chip_id_register_hex: '0x42'
+      ch543_family_datasheet_same_as_ch543_except_peripherals: true
+      wchisptool_cmd_family_support: CH54x
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 14336
+    protocol_variants:
+    - usb_native_plain
+  CH543:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 67
+    identify_request_device_type_default: 18
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH54x
+      wchisp_support_serial: false
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 14336
+    protocol_variants:
+    - usb_native_plain
+  CH544:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 68
+    identify_request_device_type_default: 18
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH54x
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 61440
+    protocol_variants:
+    - usb_native_plain
+  CH545:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 69
+    identify_request_device_type_default: 18
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH54x
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 61440
+    protocol_variants:
+    - usb_native_plain
+  CH546:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 70
+    identify_request_device_type_default: 18
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_family: CH54x
+      serial_uart: P30_P31
+      boot_pin_default: P51_VCC
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 32768
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH547:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 71
+    identify_request_device_type_default: 18
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_family: CH54x
+      serial_uart: P30_P31
+      boot_pin_default: P51_VCC
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 61440
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH548:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 72
+    identify_request_device_type_default: 18
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_family: CH54x
+      serial_uart: P30_P31
+      boot_pin_default: P51_VCC
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 32768
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH549:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 73
+    identify_request_device_type_default: 18
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_tested_usb: true
+      ch55xtool_subid: 18
+      chip_id_register_hex: '0x49'
+      serial_uart: P30_P31
+      boot_pin_default: P51_VCC
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 61440
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH551:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 81
+    identify_request_device_type_default: 17
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      isp55e0_tested_usb: true
+      ch55xtool_supported: true
+      chip_id_register_hex: '0x51'
+      serial_uart: P30_P31
+      boot_pin_default: P36_VCC
+      bootloader_matrix:
+        community_v1_1_usb_tested: true
+        community_v1_1_uart_tested: false
+        community_v2_31_usb_tested: true
+        community_uart_public_evidence: weak
+      notes: CH551 has official family serial pins but searched public tool evidence
+        is strongest for USB, especially bootloader v1.1.
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 10240
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH552:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 82
+    identify_request_device_type_default: 17
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      isp55e0_tested_usb: true
+      wchisp_tested_usb: true
+      ch55xtool_subid: 17
+      chip_id_register_hex: '0x52'
+      serial_uart: P16_P17
+      boot_pin_default: P36_VCC
+      bootloader_matrix:
+        community_v2_4_usb_tested: true
+        community_v2_4_uart_tested: false
+        official_family_serial_pins: true
+        community_uart_public_evidence: weak
+      notes: CH552 has official serial ISP pins, but searched community bootloader-version
+        evidence is strongest for USB on v2.4.
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 14336
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH553:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 83
+    identify_request_device_type_default: 17
+    transport_support:
+    - usb
+    public_cross_check:
+      ch554_manual_chip_id_register_hex: '0x53'
+      ch554_manual_app_flash_hint: 10240
+      ch55xtool_supported: true
+      ch55x_isptool_supported: true
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 10240
+    protocol_variants:
+    - usb_native_plain
+  CH554:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 84
+    identify_request_device_type_default: 17
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_chip_id: '0x54'
+      ch554_manual_chip_id_register_hex: '0x54'
+      serial_uart: P16_P17
+      boot_pin_default: P36_VCC
+      bootloader_matrix:
+        community_v2_31_usb_tested: true
+        community_v2_31_uart_tested: true
+        community_v2_40_usb_tested: true
+        official_family_serial_pins: true
+      notes: CH554 has the strongest public USB+UART bootloader evidence among CH55x,
+        especially around v2.31.
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 14336
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH555:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 85
+    identify_request_device_type_default: 17
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH55x
+      legacy_wch_isp_devices_h: true
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 61440
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 60
+  CH556:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 86
+    identify_request_device_type_default: 17
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH55x
+      legacy_wch_isp_devices_h: true
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 61440
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 60
+  CH557:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 87
+    identify_request_device_type_default: 17
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH55x
+      legacy_wch_isp_devices_h: true
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 61440
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 60
+  CH558:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 88
+    identify_request_device_type_default: 17
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_family: CH55x
+      legacy_wch_isp_devices_h: true
+      serial_uart: P02_P03
+      boot_pin_default: P46_GND
+      official_family_serial_pins: true
+      community_bootloader_matrix: sparse
+      notes: CH558 follows the official CH55X family serial pin table, but searched
+        public bootloader-version evidence is sparse.
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 32768
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 32
+  CH559:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 89
+    identify_request_device_type_default: 17
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      isp55e0_tested_usb: true
+      wchisp_tested_usb: true
+      ch55xtool_subid: 17
+      chip_id_register_hex: '0x59'
+      serial_uart: P02_P03
+      boot_pin_default: P46_GND
+      bootloader_matrix:
+        community_v2_31_usb_tested: true
+        community_v2_31_uart_tested: true
+        community_v2_40_usb_tested: true
+        official_family_serial_pins: true
+      notes: CH559 has public community evidence for both USB and UART on bootloader
+        v2.31, with USB also tested on v2.40.
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 61440
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH563:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 99
+    identify_request_device_type_default: 16
+    identify_request_pairs_default:
+    - chip_id: '0x42'
+      device_type: '0x10'
+    - chip_id: '0x43'
+      device_type: '0x10'
+    - chip_id: '0x44'
+      device_type: '0x10'
+    - chip_id: '0x45'
+      device_type: '0x10'
+    - chip_id: '0x63'
+      device_type: '0x10'
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_device_type: 16
+      wchisp_identify_pairs:
+      - chip_id: '0x42'
+        device_type: '0x10'
+      - chip_id: '0x43'
+        device_type: '0x10'
+      - chip_id: '0x44'
+        device_type: '0x10'
+      - chip_id: '0x45'
+        device_type: '0x10'
+      - chip_id: '0x63'
+        device_type: '0x10'
+      chinese_catalog_flash_kib: 224
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 229376
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 224
+  CH565:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 101
+    identify_request_device_type_default: 16
+    transport_support:
+    - usb
+    public_cross_check:
+      hydrausb3_wch_ch56x_isp_supported: true
+      wchisp_device_type: 16
+      wchisp_identify_pairs:
+      - chip_id: '0x65'
+        device_type: '0x10'
+      official_openwch_family_repo: ch569
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH566:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 102
+    identify_request_device_type_default: 16
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_device_type: 16
+      wchisp_identify_pairs:
+      - chip_id: '0x66'
+        device_type: '0x10'
+      chinese_catalog_flash_kib: 64
+      chinese_catalog_data_flash_kib: 32
+      chinese_catalog_usb_hs: host2_device2
+      chinese_catalog_sdio: 1
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 65536
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 64
+  CH567:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 103
+    identify_request_device_type_default: 16
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_device_type: 16
+      wchisp_identify_pairs:
+      - chip_id: '0x67'
+        device_type: '0x10'
+      chinese_catalog_flash_kib: 192
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH568:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 104
+    identify_request_device_type_default: 16
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_device_type: 16
+      wchisp_identify_pairs:
+      - chip_id: '0x68'
+        device_type: '0x10'
+      chinese_catalog_flash_kib: 192
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH569:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 105
+    identify_request_device_type_default: 16
+    transport_support:
+    - usb
+    public_cross_check:
+      hydrausb3_wch_ch56x_isp_supported: true
+      wlink_tested_on_family: true
+      wchisp_device_type: 16
+      wchisp_identify_pairs:
+      - chip_id: '0x69'
+        device_type: '0x10'
+      official_openwch_family_repo: ch569
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH570:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 112
+    identify_request_device_type_default: 19
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH57x
+      community_variant_caveat: CH570E_serial_only_no_key
+      package_caveat: CH570D_Q_vs_570E
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 245760
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 240
+  CH571:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 113
+    identify_request_device_type_default: 19
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH57x
+      same_config_group_as_CH573: true
+      package_caveat: CH571F_R_vs_571K
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH572:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 114
+    identify_request_device_type_default: 19
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH57x
+      community_variant_uart_example: CH572R_PA2_PA7
+      community_variant_boot_example: CH572R_PA4_low
+      package_caveat: CH572D_Q_vs_572R
+      unmodeled_package_variant: CH572R
+      unmodeled_variant_reason: official_package_exists_but_repo_keeps_uart_recipe_blocked_pending_stronger_direct_isp_evidence
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 245760
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 240
+  CH573:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 115
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      isp55e0_tested_usb: true
+      wlink_supported: true
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_pins: PB10_PB11
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH577:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 119
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_family: CH57x
+      same_protocol_family_as_CH573: true
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_pins: PB10_PB11
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 131072
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 128
+  CH578:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 88
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      wchisp_family: CH57x
+      same_protocol_family_as_CH573: true
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_pins: PB10_PB11
+      exact_package_matrix:
+        CH578F:
+          usb_isp: false
+          serial_uart: PA8_PA9
+          boot_pin_default: PB22_low
+          source_grade: vendor_family_plus_wch_blog
+      community_configurable_boot_alt: PB11_high
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 163840
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 160
+  CH579:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 121
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      isp55e0_tested_usb: true
+      protocol_capture_pair: 0x79/0x13
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_pins: PB10_PB11
+      exact_package_matrix:
+        CH579M:
+          usb_isp: PB10_PB11
+          serial_uart: PA8_PA9
+          boot_pin_default: PB22_low
+          source_grade: vendor_family_plus_wch_blog
+        CH579F:
+          usb_isp: PB10_PB11
+          serial_uart: PA8_PA9
+          boot_pin_default: PB22_low
+          source_grade: vendor_family_plus_wch_blog
+      community_configurable_boot_alt: PB11_high
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 256000
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH581:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 129
+    identify_request_device_type_default: 22
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH58x
+      same_config_group_as_CH582_CH583: true
+      package_uart_matrix_examples:
+      - 585M_584M: PA8_PA9_and_PA14_PA15
+      - 585F_584F: PB12_PB13_and_PA14_PA15
+      - 585C_585D: PA14_PA15
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH582:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 130
+    identify_request_device_type_default: 22
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      isp55e0_tested_usb: true
+      isp55e0_tested_serial: true
+      chip_signature_id: '0x82'
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_pins: PB10_PB11
+      exact_package_matrix:
+        CH582M:
+          usb_isp: PB10_PB11
+          serial_uart: PA8_PA9
+          boot_pin_default: PB22_low
+          source_grade: vendor_family_plus_wch_blog_plus_public_tool
+        CH582F:
+          usb_isp: PB10_PB11
+          serial_uart: PA8_PA9
+          boot_pin_default: PB22_low
+          source_grade: vendor_family_plus_wch_blog_plus_public_tool
+      community_configurable_boot_alt: PB11_high
+    gui_profile_serial: wch_legacy_serial
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+  CH583:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 131
+    identify_request_device_type_default: 22
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      isp55e0_tested_usb: true
+      family_group: CH583_CH582_CH581
+      chip_id_map_hex: '0x83'
+      community_package_matrix_uart: PA8_PA9
+      community_boot_pin_default: PB22_low
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_pins: PB10_PB11
+      exact_package_matrix:
+        CH583M:
+          usb_isp: PB10_PB11
+          serial_uart: PA8_PA9
+          boot_pin_default: PB22_low
+          source_grade: vendor_family_plus_wch_blog_plus_public_tool
+      community_configurable_boot_alt: PB11_high
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH584:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 132
+    identify_request_device_type_default: 22
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH58x
+      same_config_group_as_CH582_CH583: true
+      package_uart_matrix_examples:
+      - 585M_584M: PA8_PA9_and_PA14_PA15
+      - 585F_584F: PB12_PB13_and_PA14_PA15
+      - 585C_585D: PA14_PA15
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH585:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 133
+    identify_request_device_type_default: 22
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH58x
+      same_config_group_as_CH582_CH583: true
+      package_uart_matrix_examples:
+      - 585M_584M: PA8_PA9_and_PA14_PA15
+      - 585F_584F: PB12_PB13_and_PA14_PA15
+      - 585C_585D: PA14_PA15
+    backend_family: wch_legacy_usb
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH591:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 145
+    identify_request_device_type_default: 34
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_family: CH59x
+      same_config_group_as_CH592: true
+      package_caveat: CH591F_R_vs_591D
+      community_conflict_flag: CH591D_uart_path_conflict
+      mainstream_packages_uart: PA8_PA9
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH592:
+    gui_profile_usb: wch_legacy_usb
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 146
+    identify_request_device_type_default: 34
+    transport_support:
+    - usb
+    public_cross_check:
+      wchisp_info_pair: 0x92/0x22
+      wchisp_tested_usb: true
+      package_caveat: CH592X_F_A_vs_592D
+      mainstream_packages_uart: PA8_PA9
+      variant_uart_example: CH592D_PB12_PB13
+      variant_boot_example: CH592D_PB15_low
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - usb_native_plain
+  CH578F:
+    gui_profile_serial: wch_legacy_serial
+    identify_request_device_id_default: 88
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    public_cross_check:
+      package_profile_of: CH578
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_isp: false
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 163840
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    erase_sectors_default: 160
+  CH570D:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 112
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH570
+      serial_uart: PA0_PA1
+      serial_entry_mode: no_key_serial
+      usb_isp: true
+      usb_pins: PA0_PA1
+      isp_default_level: PA1_high
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 245760
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 240
+  CH570Q:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 112
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH570
+      serial_uart: PA0_PA1
+      serial_entry_mode: no_key_serial
+      usb_isp: true
+      usb_pins: PA0_PA1
+      isp_default_level: PA1_high
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 245760
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 240
+  CH570E:
+    gui_profile_serial: wch_legacy_serial
+    identify_request_device_id_default: 112
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    public_cross_check:
+      package_profile_of: CH570
+      serial_uart: PA0_PA1
+      serial_entry_mode: no_key_serial_only
+      usb_isp: false
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 245760
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    erase_sectors_default: 240
+  CH571F:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 113
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH571
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH571R:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 113
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH571
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH571K:
+    gui_profile_serial: wch_legacy_serial
+    identify_request_device_id_default: 113
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    public_cross_check:
+      package_profile_of: CH571
+      serial_uart: PA15_PA14
+      serial_uart_vendor_family_default: PA8_PA9
+      serial_uart_vendor_pinmap_support: PA15_PA14_uart0_remap
+      evidence_level: exact_package_community_confirmed_vendor_pinmap_supported
+      serial_entry_mode: no_key_serial_auto_handshake_40ms
+      usb_isp: false
+      boot_pin_default: none
+      recommended_clock: external_32MHz
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    erase_sectors_default: 192
+  CH572D:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 114
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH572
+      serial_uart: PA0_PA1
+      serial_entry_mode: no_key_serial
+      usb_isp: true
+      usb_pins: PA0_PA1
+      isp_default_level: PA1_high
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 245760
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 240
+  CH572Q:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 114
+    identify_request_device_type_default: 19
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH572
+      serial_uart: PA0_PA1
+      serial_entry_mode: no_key_serial
+      usb_isp: true
+      usb_pins: PA0_PA1
+      isp_default_level: PA1_high
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 245760
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 240
+  CH591F:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 145
+    identify_request_device_type_default: 34
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH591
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH591R:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 145
+    identify_request_device_type_default: 34
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH591
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH591D:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 145
+    identify_request_device_type_default: 34
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH591
+      serial_uart: PA8_PA9
+      boot_pin_default: PB7_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+      evidence_level: medium_conflicting_package_docs
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 196608
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 192
+  CH592X:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 146
+    identify_request_device_type_default: 34
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH592
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH592F:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 146
+    identify_request_device_type_default: 34
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH592
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH592A:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 146
+    identify_request_device_type_default: 34
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH592
+      serial_uart: PA8_PA9
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH592D:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 146
+    identify_request_device_type_default: 34
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH592
+      serial_uart: PB12_PB13
+      serial_uart_vendor_pinmap_support: PB12_PB13_uart1_remap
+      boot_pin_default: PB15_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+      evidence_level: exact_package_community_confirmed_vendor_pinmap_supported
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH584M:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 132
+    identify_request_device_type_default: 22
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH584
+      serial_uart_options:
+      - PA8_PA9
+      - PA15_PA14
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH585M:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 133
+    identify_request_device_type_default: 22
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH585
+      serial_uart_options:
+      - PA8_PA9
+      - PA15_PA14
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins:
+      - PB10_PB11
+      - PB12_PB13
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH584F:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 132
+    identify_request_device_type_default: 22
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH584
+      serial_uart_options:
+      - PA15_PA14
+      - PB12_PB13
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins: PB10_PB11
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH585F:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 133
+    identify_request_device_type_default: 22
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH585
+      serial_uart: PA15_PA14
+      serial_uart_vendor_alt_exists: PB12_PB13_uart1_remap
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins:
+      - PB10_PB11
+      - PB12_PB13
+      evidence_level: exact_package_community_confirmed_vendor_pinmap_supported
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH585C:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 133
+    identify_request_device_type_default: 22
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH585
+      serial_uart: PA15_PA14
+      serial_uart_vendor_alt_exists: PB12_PB13_uart1_remap
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins:
+      - PB10_PB11
+      - PB12_PB13
+      evidence_level: exact_package_community_confirmed_vendor_pinmap_supported
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+  CH585D:
+    gui_profile_usb: wch_legacy_usb
+    gui_profile_serial: wch_legacy_serial
+    native_usb:
+      common_usb_selectors:
+      - 4348:55e0
+      - 1a86:55e0
+      project_format_version_min: 3
+    identify_request_device_id_default: 133
+    identify_request_device_type_default: 22
+    transport_support:
+    - serial
+    - usb
+    public_cross_check:
+      package_profile_of: CH585
+      serial_uart: PA15_PA14
+      serial_uart_vendor_alt_exists: PB12_PB13_uart1_remap
+      boot_pin_default: PB22_low
+      usb_isp: true
+      usb_pins:
+      - PB10_PB11
+      - PB12_PB13
+      evidence_level: exact_package_community_confirmed_vendor_pinmap_supported
+    backend_family: wch_legacy_uart
+    vendor_max_flash_size_hint: 458752
+    protocol_variants:
+    - legacy_uart_native_wrapped
+    - usb_native_plain
+    erase_sectors_default: 448
+option_profiles:
+  x103:
+    fields:
+      rdpr:
+        kind: byte
+      iwdg_sw:
+        kind: bit
+      stop_rst:
+        kind: bit
+      standby_rst:
+        kind: bit
+      porctr_long_delay:
+        kind: bit
+      data0:
+        kind: byte
+      data1:
+        kind: byte
+      wrp0:
+        kind: byte
+      wrp1:
+        kind: byte
+      wrp2:
+        kind: byte
+      wrp3:
+        kind: byte
+    ui_sections:
+    - protection
+    - reset_watchdog
+    - user_bytes
+  x035:
+    fields:
+      rdpr:
+        kind: byte
+      iwdg_sw:
+        kind: bit
+      stop_rst:
+        kind: bit
+      standby_rst:
+        kind: bit
+      data0:
+        kind: byte
+      data1:
+        kind: byte
+      wrp0:
+        kind: byte
+      wrp1:
+        kind: byte
+      wrp2:
+        kind: byte
+      wrp3:
+        kind: byte
+    ui_sections:
+    - protection
+    - reset_watchdog
+    - user_bytes
+  fv20x:
+    fields:
+      rdpr:
+        kind: byte
+      iwdg_sw:
+        kind: bit
+      stop_rst:
+        kind: bit
+      standby_rst:
+        kind: bit
+      sram_code_mode:
+        kind: enum
+      data0:
+        kind: byte
+      data1:
+        kind: byte
+      wrp0:
+        kind: byte
+      wrp1:
+        kind: byte
+      wrp2:
+        kind: byte
+      wrp3:
+        kind: byte
+      fast_baud:
+        kind: transport_param
+    ui_sections:
+    - protection
+    - reset_watchdog
+    - memory_split
+    - user_bytes
+  fv30x:
+    fields:
+      rdpr:
+        kind: byte
+      iwdg_sw:
+        kind: bit
+      stop_rst:
+        kind: bit
+      standby_rst:
+        kind: bit
+      sram_code_mode:
+        kind: enum_optional
+      data0:
+        kind: byte
+      data1:
+        kind: byte
+      wrp0:
+        kind: byte
+      wrp1:
+        kind: byte
+      wrp2:
+        kind: byte
+      wrp3:
+        kind: byte
+      fast_baud:
+        kind: transport_param
+    ui_sections:
+    - protection
+    - reset_watchdog
+    - memory_split_optional
+    - user_bytes
+gui_profiles:
+  x103_serial:
+    transport: serial
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_long_delay_time
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - serial_port
+    - user_file
+    - serial_auto_di
+    controls_hidden:
+    - fast_baud
+    - ramx_rom_mode
+  x103_usb:
+    transport: usb
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_long_delay_time
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    controls_hidden:
+    - fast_baud
+    - ramx_rom_mode
+  v20x_serial_v203:
+    transport: serial
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - ramx_rom_mode
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - serial_port
+    - user_file
+    - serial_auto_di
+    ramx_rom_values_observed:
+    - RAMX 64KB + ROM 128KB
+  v20x_serial_v208:
+    transport: serial
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - fast_baud
+    - ramx_rom_mode
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - serial_port
+    - user_file
+    - serial_auto_di
+    ramx_rom_values_observed:
+    - RAMX 64KB + ROM 128KB
+    - RAMX 48KB + ROM 144KB
+    - RAMX 32KB + ROM 160KB
+  v20x_usb:
+    transport: usb
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - ramx_rom_mode
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+  v30x_serial_split:
+    transport: serial
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - fast_baud
+    - ramx_rom_mode
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - serial_port
+    - user_file
+    - serial_auto_di
+    ramx_rom_values_observed:
+    - RAMX 128KB + ROM 192KB
+    - RAMX 96KB + ROM 224KB
+    - RAMX 64KB + ROM 256KB
+    - RAMX 64KB + ROM 256KB
+    - RAMX 32KB + ROM 288KB
+  v30x_serial_compact:
+    transport: serial
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - fast_baud
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - serial_port
+    - user_file
+    - serial_auto_di
+    controls_hidden:
+    - ramx_rom_mode
+  v30x_usb:
+    transport: usb
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - ramx_rom_mode
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+  f20x_serial_split:
+    transport: serial
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - fast_baud
+    - ramx_rom_mode
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - serial_port
+    - user_file
+    - serial_auto_di
+  f20x_serial_compact:
+    transport: serial
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - fast_baud
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - serial_port
+    - user_file
+    - serial_auto_di
+    controls_hidden:
+    - ramx_rom_mode
+  x035_serial:
+    transport: serial
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - fast_baud
+    - serial_port
+    - user_file
+    - serial_auto_di
+  x035_usb:
+    transport: usb
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+  f20x_usb:
+    transport: usb
+    controls_visible:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - data0
+    - data1
+    - ramx_rom_mode
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+  wch_legacy_usb:
+    transport: usb
+    controls_visible: []
+    controls_hidden:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - enable_long_delay_time
+    - data0
+    - data1
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - ramx_rom_mode
+  v00x_serial:
+    transport: serial
+    controls_visible: []
+  l103_serial:
+    transport: serial
+    controls_visible: []
+  l103_usb:
+    transport: usb
+    controls_visible: []
+  wch_legacy_serial:
+    transport: serial
+    controls_visible: []
+    controls_hidden:
+    - disable_stop_mode_rst
+    - enable_rrp
+    - remove_protect
+    - clear_codeflash
+    - disable_standby_mode_rst
+    - enable_soft_ctrl_iwdg
+    - enable_long_delay_time
+    - data0
+    - data1
+    - wrp0
+    - wrp1
+    - wrp2
+    - wrp3
+    - ramx_rom_mode
