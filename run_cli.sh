@@ -5,6 +5,10 @@ find . -type d -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true
 [ -d .venv ] || python3 -m venv .venv
 source .venv/bin/activate
 pip install -q -U pip
-pip install -q -r requirements.txt
+if [ -f requirements-cli.txt ]; then
+  pip install -q -r requirements-cli.txt
+else
+  pip install -q -r requirements.txt
+fi
 export PYTHONPATH=src
-exec python -B -m chisp_flasher.app.main
+exec python -B -m chisp_flasher.cli.main "$@"

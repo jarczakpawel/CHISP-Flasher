@@ -163,6 +163,10 @@ def create_portable_bundle() -> Path:
     built = built_output_path()
     copy_tree(built, bundle_root / built.name)
     shutil.copy2(ROOT / 'README.md', bundle_root / 'README.md')
+    if (ROOT / 'CHANGELOG.md').exists():
+        shutil.copy2(ROOT / 'CHANGELOG.md', bundle_root / 'CHANGELOG.md')
+    if (ROOT / 'reference').exists():
+        copy_tree(ROOT / 'reference', bundle_root / 'reference')
     if (ROOT / 'assets' / 'readme').exists():
         copy_tree(ROOT / 'assets' / 'readme', bundle_root / 'assets' / 'readme')
     if sys.platform.startswith('linux'):

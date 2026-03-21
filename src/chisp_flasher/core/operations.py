@@ -560,10 +560,12 @@ def _clone_project(project: CHISPProject) -> CHISPProject:
     return deepcopy(project)
 
 
-def _iter_probe_projects(project: CHISPProject) -> list[tuple[CHISPProject, str]]:
+def _iter_probe_projects(project: CHISPProject, *, max_ports: int = 3, max_usb: int = 3) -> list[tuple[CHISPProject, str]]:
     candidates = enumerate_connection_candidates(project)
-    serial_entries = list(candidates.get('serial_port_entries') or [])[:3]
-    usb_entries = list(candidates.get('usb_device_entries') or [])[:3]
+    serial_limit = max(1, int(max_ports))
+    usb_limit = max(1, int(max_usb))
+    serial_entries = list(candidates.get('serial_port_entries') or [])[:serial_limit]
+    usb_entries = list(candidates.get('usb_device_entries') or [])[:usb_limit]
     resolver = _resolver()
 
     current_serial = _serial_port_selector(project)
@@ -578,7 +580,7 @@ def _iter_probe_projects(project: CHISPProject) -> list[tuple[CHISPProject, str]
             'endpoint_in': project.transport.usb_endpoint_in,
         })
     attempts: list[tuple[CHISPProject, str]] = []
-    seen: set[tuple[str, str, str]] = set()
+    seen: set[tuple[str, ...]] = set()
 
     def add_probe(chip: str, transport_kind: str, selector: str, *, interface_number=None, endpoint_out=None, endpoint_in=None, serial_auto_di: bool = False, note: str='') -> None:
         if transport_kind == 'usb':
@@ -589,10 +591,10 @@ def _iter_probe_projects(project: CHISPProject) -> list[tuple[CHISPProject, str]
                 '' if interface_number is None else str(int(interface_number)),
                 '' if endpoint_out is None else f'{int(endpoint_out) & 0xFF:02x}',
                 '' if endpoint_in is None else f'{int(endpoint_in) & 0xFF:02x}',
-                bool(serial_auto_di),
+                str(bool(serial_auto_di)),
             )
         else:
-            key = (chip, transport_kind, selector, bool(serial_auto_di))
+            key = (chip, transport_kind, selector, str(bool(serial_auto_di)))
         if not chip or not selector or key in seen:
             return
         probe = _clone_project(project)
@@ -652,8 +654,52 @@ def _iter_probe_projects(project: CHISPProject) -> list[tuple[CHISPProject, str]
     return attempts
 
 
-def run_project_smart_detect(project: CHISPProject, *, log_cb=None) -> dict:
-    attempts = _iter_probe_projects(project)
+def _usb_selector_prefix(selector: str) -> str:
+    parts = [part.strip().lower() for part in str(selector or '').split(':') if part.strip()]
+    if len(parts) >= 2:
+        return f'{parts[0]}:{parts[1]}'
+    return ''
+
+
+def _refresh_probe_usb_selector(probe: CHISPProject) -> tuple[bool, str]:
+    selector = str(probe.transport.usb_device or '').strip()
+    if not selector:
+        return False, 'usb selector is empty'
+    candidates = enumerate_connection_candidates(probe)
+    usb_entries = list(candidates.get('usb_device_entries') or [])
+    if not usb_entries:
+        return False, 'no native USB candidates visible'
+
+    current = None
+    for entry in usb_entries:
+        if str(entry.get('selector') or '').strip() == selector:
+            current = entry
+            break
+
+    if current is None:
+        prefix = _usb_selector_prefix(selector)
+        if prefix:
+            for entry in usb_entries:
+                entry_selector = str(entry.get('selector') or '').strip()
+                if _usb_selector_prefix(entry_selector) == prefix:
+                    current = entry
+                    break
+
+    if current is None:
+        return False, f'native usb device not found: {selector}'
+
+    new_selector = str(current.get('selector') or selector).strip()
+    probe.transport.usb_device = new_selector
+    probe.transport.usb_interface_number = current.get('interface_number')
+    probe.transport.usb_endpoint_out = current.get('endpoint_out')
+    probe.transport.usb_endpoint_in = current.get('endpoint_in')
+    if new_selector != selector:
+        return True, f'usb selector refreshed: {selector} -> {new_selector}'
+    return True, f'usb selector refreshed: {new_selector}'
+
+
+def run_project_smart_detect(project: CHISPProject, *, log_cb=None, max_ports: int = 3, max_usb: int = 3, refresh_usb_between_attempts: bool = True) -> dict:
+    attempts = _iter_probe_projects(project, max_ports=max_ports, max_usb=max_usb)
     if not attempts:
         raise OperationError('no connection candidates to probe')
 
@@ -662,10 +708,21 @@ def run_project_smart_detect(project: CHISPProject, *, log_cb=None) -> dict:
         if log_cb is not None:
             log_cb('INFO', f'smart detect: try {idx}/{len(attempts)} - {label}')
         try:
+            if refresh_usb_between_attempts and str(probe.transport.kind or '').strip() == 'usb':
+                ok, refresh_note = _refresh_probe_usb_selector(probe)
+                if log_cb is not None and refresh_note:
+                    log_cb('INFO', refresh_note)
+                if not ok:
+                    last_error = refresh_note or 'native usb device not found'
+                    if log_cb is not None:
+                        log_cb('INFO', f'smart detect miss: {label} - {last_error}')
+                    continue
             result = run_project_detect(probe, log_cb=log_cb)
             result['probe_label'] = label
             result['probe_attempts'] = idx
+            result['probe_attempts_total'] = len(attempts)
             result['smart_detect'] = True
+            result['smart_detect_limits'] = {'max_ports': max(1, int(max_ports)), 'max_usb': max(1, int(max_usb))}
             return result
         except Exception as exc:
             last_error = str(exc)

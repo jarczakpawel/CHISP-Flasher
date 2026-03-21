@@ -10,3 +10,7 @@ _tmp_*.chisp
 _tmp_*.json
 tmp_*.chisp
 docs/
+*.egg-info/
+.dev-notes/
+
+.idea/

@@ -132,16 +132,9 @@ class UsbNativeLink:
                     info.serial_number = str(usb_util.get_string(dev, dev.iSerialNumber) or '')
                 except Exception:
                     pass
-                cfg = None
-                try:
-                    cfg = dev.get_active_configuration()
-                except Exception:
-                    try:
-                        dev.set_configuration()
-                        cfg = dev.get_active_configuration()
-                    except Exception:
-                        cfg = None
-                if cfg is not None:
+
+                appended = False
+                for cfg in dev:
                     for intf in cfg:
                         ep_out = None
                         ep_in = None
@@ -163,10 +156,13 @@ class UsbNativeLink:
                             endpoint_out=ep_out,
                             endpoint_in=ep_in,
                         ))
-                    continue
-                out.append(info)
+                        appended = True
+
+                if not appended:
+                    out.append(info)
             except Exception:
                 continue
+
         dedup: dict[str, UsbNativeDeviceInfo] = {}
         for item in out:
             key = item.selector
@@ -175,20 +171,42 @@ class UsbNativeLink:
             dedup[key] = item
         return sorted(dedup.values(), key=lambda x: (x.vid, x.pid, x.bus or -1, x.address or -1, x.interface_number or -1))
 
-
     def open(self) -> None:
         usb_core, usb_util = self._load_usb()
         self._usb_core = usb_core
         self._usb_util = usb_util
-        kwargs = {'idVendor': self.info.vid, 'idProduct': self.info.pid}
-        if self.info.bus is not None:
-            kwargs['bus'] = self.info.bus
-        if self.info.address is not None:
-            kwargs['address'] = self.info.address
-        dev = usb_core.find(**kwargs)
+
+        try:
+            devices = list(usb_core.find(find_all=True) or [])
+        except Exception as e:
+            raise TransportError(f'native usb enumerate failed: {e}') from e
+
+        dev = None
+        fallback = None
+        for candidate in devices:
+            try:
+                if int(candidate.idVendor) != self.info.vid or int(candidate.idProduct) != self.info.pid:
+                    continue
+                cand_bus = getattr(candidate, 'bus', None)
+                cand_addr = getattr(candidate, 'address', None)
+                if self.info.bus is not None and self.info.address is not None:
+                    if cand_bus == self.info.bus and cand_addr == self.info.address:
+                        dev = candidate
+                        break
+                if fallback is None:
+                    fallback = candidate
+            except Exception:
+                continue
+
+        if dev is None:
+            dev = fallback
         if dev is None:
             raise TransportError(f'native usb device not found: {self.info.selector}')
+
         self._dev = dev
+        self.info.bus = getattr(dev, 'bus', self.info.bus)
+        self.info.address = getattr(dev, 'address', self.info.address)
+
         cfg = None
         try:
             cfg = dev.get_active_configuration()
@@ -201,14 +219,23 @@ class UsbNativeLink:
                 pass
             try:
                 cfg = dev.get_active_configuration()
-            except Exception as e:
-                raise TransportError(f'native usb configuration not available: {e}') from e
+            except Exception:
+                for candidate_cfg in dev:
+                    cfg = candidate_cfg
+                    break
+                if cfg is None:
+                    raise TransportError('native usb configuration not available')
+
         intf = None
         if self.info.interface_number is not None:
-            try:
-                intf = cfg[(int(self.info.interface_number), 0)]
-            except Exception:
-                intf = None
+            for candidate in cfg:
+                try:
+                    if int(getattr(candidate, 'bInterfaceNumber', -1)) == int(self.info.interface_number):
+                        intf = candidate
+                        break
+                except Exception:
+                    continue
+
         if intf is None:
             candidates = []
             for candidate in cfg:
@@ -235,18 +262,22 @@ class UsbNativeLink:
             if candidates:
                 candidates.sort(key=lambda item: (-item[0], int(getattr(item[1], 'bInterfaceNumber', 0))))
                 intf = candidates[0][1]
+
         if intf is None:
             raise TransportError('native usb interface not found')
+
         try:
             if dev.is_kernel_driver_active(int(intf.bInterfaceNumber)):
                 dev.detach_kernel_driver(int(intf.bInterfaceNumber))
         except Exception:
             pass
+
         try:
             usb_util.claim_interface(dev, int(intf.bInterfaceNumber))
             self._claimed_interface_number = int(intf.bInterfaceNumber)
         except Exception:
             self._claimed_interface_number = None
+
         ep_out = None
         ep_in = None
         for ep in intf:
@@ -255,6 +286,7 @@ class UsbNativeLink:
                 ep_out = ep
             if self.info.endpoint_in is not None and addr == int(self.info.endpoint_in):
                 ep_in = ep
+
         if ep_out is None or ep_in is None:
             for ep in intf:
                 addr = int(ep.bEndpointAddress)
@@ -262,8 +294,10 @@ class UsbNativeLink:
                     ep_out = ep
                 elif usb_util.endpoint_direction(addr) == usb_util.ENDPOINT_IN and ep_in is None:
                     ep_in = ep
+
         if ep_out is None or ep_in is None:
             raise TransportError('native usb bulk endpoints not found')
+
         self.info.interface_number = int(intf.bInterfaceNumber)
         self.info.endpoint_out = int(ep_out.bEndpointAddress)
         self.info.endpoint_in = int(ep_in.bEndpointAddress)

@@ -64,7 +64,7 @@ SERIAL_TIMEOUTS_S = {
     'read_cfg': 1.2,
     'isp_key': 1.2,
     'erase': 20.0,
-    'program': 2.5,
+    'program': 5.0,
     'verify': 2.5,
     'set_baud': 1.2,
     'isp_end': 1.2,

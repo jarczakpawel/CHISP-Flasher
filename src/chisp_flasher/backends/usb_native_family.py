@@ -30,7 +30,10 @@ class NativeUsbFamilyBackend(BackendBase):
     chip_native_defaults: dict[str, dict] = {}
 
     def _normalize_identify_candidates(self, chip_cfg: dict, identify_candidates=None) -> list[dict]:
-        raw = identify_candidates if isinstance(identify_candidates, (list, tuple)) else []
+        raw = identify_candidates if isinstance(identify_candidates, (list, tuple)) else None
+        if raw is None:
+            fallback = chip_cfg.get('identify_candidates')
+            raw = fallback if isinstance(fallback, (list, tuple)) else []
         out: list[dict] = []
         seen: set[tuple[int, int]] = set()
         for item in raw:
@@ -96,7 +99,11 @@ class NativeUsbFamilyBackend(BackendBase):
                 matched = self._match_identify_candidate(chip_id, chip_type, identify_candidates)
                 if matched is not None:
                     return parsed, matched
-                last_err = BackendError(f'unexpected chip_id/type: 0x{chip_id:02x}/0x{chip_type:02x}')
+                expected = ', '.join(
+                    f'0x{int(x["identify_device_id"]):02x}/0x{int(x["device_type"]):02x}'
+                    for x in identify_candidates
+                )
+                last_err = BackendError(f'unexpected chip_id/type: 0x{chip_id:02x}/0x{chip_type:02x}; expected: {expected}')
             except Exception as e:
                 last_err = e
         if last_err is None:
@@ -133,7 +140,9 @@ class NativeUsbFamilyBackend(BackendBase):
         selector = (usb_selector or '').strip()
         if not selector:
             raise BackendError('usb device selector is empty')
+        expected = ', '.join(f'0x{int(c["identify_device_id"]):02x}/0x{int(c["device_type"]):02x}' for c in identify_candidates)
         self.log(log_cb, 'INFO', f'native usb open selector={selector} chip={chip_name}')
+        self.log(log_cb, 'INFO', f'native usb expected identify pairs: {expected}')
         link = self._make_link(selector, trace=trace, usb_interface_number=usb_interface_number, usb_endpoint_out=usb_endpoint_out, usb_endpoint_in=usb_endpoint_in)
         link.open()
         try:

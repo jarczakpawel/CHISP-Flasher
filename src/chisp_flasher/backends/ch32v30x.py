@@ -83,7 +83,10 @@ class Backend(BackendBase):
     }
 
     def _normalize_identify_candidates(self, chip_cfg: dict, identify_candidates=None) -> list[dict]:
-        raw = identify_candidates if isinstance(identify_candidates, (list, tuple)) else []
+        raw = identify_candidates if isinstance(identify_candidates, (list, tuple)) else None
+        if raw is None:
+            fallback = chip_cfg.get('identify_candidates')
+            raw = fallback if isinstance(fallback, (list, tuple)) else []
         out: list[dict] = []
         seen: set[tuple[int, int]] = set()
         for item in raw:

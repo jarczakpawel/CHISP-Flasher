@@ -66,6 +66,7 @@ from chisp_flasher.core.operations import (
 )
 from chisp_flasher.core.session import Session
 from chisp_flasher.formats.projectfmt import CHISPProject, load_project, save_project
+from chisp_flasher import __version__
 from chisp_flasher.ui.config_layout import FIELD_NOTES, PROFILE_SUMMARY, SECTION_META, SECTION_ORDER
 from chisp_flasher.ui.connection_guide import get_guide
 from chisp_flasher.ui.widgets.log_panel import LogPanel
@@ -618,7 +619,7 @@ class MainWindow(QMainWindow):
         self.header_subtitle.setProperty('role', 'subtitle')
 
         self.header_meta = QLabel(
-            'Version 1.0 - Author: Paweł Jarczak - '
+            f'Version {__version__} - Author: Paweł Jarczak - '
             '<a href="https://github.com/jarczakpawel/CHISP-Flasher">GitHub</a>',
             self
         )
@@ -705,6 +706,7 @@ class MainWindow(QMainWindow):
         self.transport_box.currentTextChanged.connect(self._on_transport_changed)
         self.transport_controls['serial_port'] = self._combo([])
         self.transport_controls['usb_device'] = self._combo([])
+        self.transport_controls['usb_device'].currentTextChanged.connect(self._on_usb_device_changed)
         self.transport_controls['fast_baud'] = self._combo(['115200', '230400', '460800', '500000', '921600', '1000000', '2000000'])
         self.transport_controls['serial_auto_di'] = QCheckBox('Auto DI', self)
         self.transport_controls['serial_auto_di'].toggled.connect(self._on_serial_auto_di_toggled)
@@ -986,7 +988,7 @@ class MainWindow(QMainWindow):
         out: list[str] = []
         for name in self.chipdb.chips.keys():
             s = str(name).strip().upper()
-            for prefix in ('CH32V', 'CH32F', 'CH32X', 'CH32L', 'CH54', 'CH55', 'CH56', 'CH57', 'CH58', 'CH59'):
+            for prefix in ('CH32V', 'CH32F', 'CH32X', 'CH32L', 'CH32M', 'CH54', 'CH55', 'CH56', 'CH57', 'CH58', 'CH59'):
                 if s.startswith(prefix) and prefix not in out:
                     out.append(prefix)
                     break
@@ -1500,6 +1502,7 @@ class MainWindow(QMainWindow):
         self._candidate_cache = candidates
         self._set_combo_values(self.transport_controls['serial_port'], candidates.get('serial_port_entries') or [])
         self._set_combo_values(self.transport_controls['usb_device'], candidates.get('usb_device_entries') or [])
+        self._sync_usb_fields_from_selector(self._combo_value(self.transport_controls['usb_device']), overwrite=False)
         self._update_connection_suggestion(candidates)
         if not initial:
             suggestion = candidates.get('suggestion') or {}
@@ -1516,6 +1519,42 @@ class MainWindow(QMainWindow):
             self.connection_suggestion.setText(label)
         else:
             self.connection_suggestion.setText('No connection suggestion available yet.')
+
+    def _find_usb_candidate_entry(self, selector: str) -> dict | None:
+        target = str(selector or '').strip().lower()
+        if not target:
+            return None
+        for item in list((self._candidate_cache or {}).get('usb_device_entries') or []):
+            if str(item.get('selector') or '').strip().lower() == target:
+                return item
+        return None
+
+    def _sync_usb_fields_from_selector(self, selector: str, *, overwrite: bool) -> None:
+        item = self._find_usb_candidate_entry(selector)
+        if item is None:
+            return
+
+        current_intf = self.transport_controls['usb_interface_number'].text().strip()
+        current_out = self.transport_controls['usb_endpoint_out'].text().strip()
+        current_in = self.transport_controls['usb_endpoint_in'].text().strip()
+
+        if overwrite or not current_intf:
+            value = item.get('interface_number')
+            self.transport_controls['usb_interface_number'].setText('' if value is None else str(int(value)))
+
+        if overwrite or not current_out:
+            value = item.get('endpoint_out')
+            self.transport_controls['usb_endpoint_out'].setText('' if value is None else hex(int(value)))
+
+        if overwrite or not current_in:
+            value = item.get('endpoint_in')
+            self.transport_controls['usb_endpoint_in'].setText('' if value is None else hex(int(value)))
+
+    def _on_usb_device_changed(self, value: str) -> None:
+        if self._building:
+            return
+        self._sync_usb_fields_from_selector(value, overwrite=True)
+        self._on_ui_edited()
 
     def _apply_suggested_connection(self) -> None:
         suggestion = (self._candidate_cache or {}).get('suggestion') or {}

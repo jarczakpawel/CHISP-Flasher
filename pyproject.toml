@@ -1,9 +1,33 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "chisp-flasher"
-version = "1.0.0"
+version = "1.1.0"
 description = "Cross-platform ISP flasher for WCH CH32, CH5x and CH6x families"
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["PySide6", "PyYAML", "pyserial", "pyusb", "pyelftools"]
 
 [project.scripts]
+chisp = "chisp_flasher.cli.main:main"
 chisp-flasher = "chisp_flasher.app.main:main"
+
+[project.optional-dependencies]
+cli = ["PyYAML", "pyserial", "pyusb", "pyelftools"]
+gui = ["PySide6"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"chisp_flasher" = [
+  "data/*.yaml",
+  "ui/assets/*",
+  "ui/assets/**/*"
+]

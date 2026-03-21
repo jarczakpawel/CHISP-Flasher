@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build ${{ matrix.label }}
+  build_gui:
+    name: Build GUI ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -46,35 +46,72 @@ jobs:
         if: runner.os == 'Windows'
         run: choco install innosetup -y --no-progress
 
-      - name: Install build dependencies
+      - name: Install GUI build dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt pyinstaller pillow
 
-      - name: Build release package
+      - name: Build GUI release package
         run: python scripts/build_release.py
 
-      - name: Upload build artifact
+      - name: Upload GUI build artifact
         uses: actions/upload-artifact@v6
         with:
-          name: chisp-flasher-${{ matrix.label }}
+          name: chisp-flasher-gui-${{ matrix.label }}
           path: dist/release/*
+          if-no-files-found: error
+
+  build_python_package:
+    name: Build Python package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Build wheel and sdist
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+
+      - name: Upload Python package artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: chisp-flasher-python-package
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
           if-no-files-found: error
 
   release:
     name: Create GitHub release
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build
+    needs:
+      - build_gui
+      - build_python_package
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v8
+      - name: Download GUI artifacts
+        uses: actions/download-artifact@v6
         with:
           path: release-assets
-          pattern: chisp-flasher-*
+          pattern: chisp-flasher-gui-*
+          merge-multiple: true
+
+      - name: Download Python package artifacts
+        uses: actions/download-artifact@v6
+        with:
+          path: release-assets
+          pattern: chisp-flasher-python-package
           merge-multiple: true
 
       - name: Publish release

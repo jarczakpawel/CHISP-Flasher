@@ -1,0 +1,2 @@
+-r requirements-cli.txt
+PySide6

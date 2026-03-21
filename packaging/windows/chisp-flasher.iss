@@ -5,7 +5,7 @@
 #define MyAppExeName "CHISP Flasher.exe"
 
 #ifndef MyAppVersion
-  #define MyAppVersion "1.0.0"
+  #define MyAppVersion "1.1.0"
 #endif
 #ifndef SourceDir
   #error SourceDir not defined

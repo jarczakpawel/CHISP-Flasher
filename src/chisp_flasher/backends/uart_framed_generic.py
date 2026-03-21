@@ -760,7 +760,7 @@ class UartFramedGenericBackend(BackendBase):
                 addr = i * chunk_size
                 plain = firmware_padded[addr:addr + chunk_size]
                 enc = xor_crypt(plain, xor_key)
-                code, _ = link.txrx(build_program(addr, pad_byte, enc), CMD_PROGRAM, 1.8)
+                code, _ = link.txrx(build_program(addr, pad_byte, enc), CMD_PROGRAM, 5.0)
                 if code != 0x00:
                     raise BackendError(f'program failed at 0x{addr:08x}')
                 stage_pct = (i + 1) * 100 // blocks
@@ -774,7 +774,7 @@ class UartFramedGenericBackend(BackendBase):
 
             flush_addr = blocks * chunk_size
             self.log(log_cb, 'INFO', f'stage program_flush addr=0x{flush_addr:08x} (A5 empty)')
-            code, _ = link.txrx(build_program(flush_addr, pad_byte, b''), CMD_PROGRAM, 2.2)
+            code, _ = link.txrx(build_program(flush_addr, pad_byte, b''), CMD_PROGRAM, 5.0)
             if code != 0x00:
                 raise BackendError('program_flush failed')
             self.progress(progress_cb, 50, blocks, blocks)
